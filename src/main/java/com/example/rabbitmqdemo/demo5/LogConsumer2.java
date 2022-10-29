@@ -1,24 +1,18 @@
-package com.example.rabbitmqdemo.DemoTwo;
+package com.example.rabbitmqdemo.demo5;
 
 import com.example.rabbitmqdemo.utils.RabbitMQUtil;
 import com.rabbitmq.client.Channel;
 
-
-/**
- * consumer1
- *
- * @author WTDYang
- * @date 2022/10/29
- */
-public class Consumer2 {
-    public static final String QUEUE_NAME = "hello";
-
+public class LogConsumer2 {
+    private static String EXCHANGE_NAME = "loggers";
     public static void main(String[] args) throws Exception {
         Channel channel = RabbitMQUtil.getChannel();
+      //  channel.exchangeDeclare(EXCHANGE_NAME,"fanout");
 
-        //接收消息
-        System.out.println("C2 消费者启动等待消费.................. ");
-        channel.basicConsume(QUEUE_NAME,true,
+        String queue = channel.queueDeclare().getQueue();
+        channel.queueBind(queue,EXCHANGE_NAME,"");
+        System.out.println("日志二开始工作");
+        channel.basicConsume(queue,true,
                 (consumerTag,delivery)->{
                     String receivedMessage = new String(delivery.getBody());
                     System.out.println("C2接收到消息:"+receivedMessage);
